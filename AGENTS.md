@@ -55,7 +55,8 @@ python minesweeper-game/windows/build.py
 
 ### 类设计
 - 使用类来管理游戏状态和逻辑
-- 使用 `Enum` 进行状态管理（CellState、GameStatus）
+- 使用 `Enum` 进行状态管理（CellState、GameStatus、Difficulty）
+- 新增 Difficulty 枚举用于难度选择（EASY、HARD、EXTREME、CUSTOM）
 - 私有/内部方法前缀下划线（如适用）
 - 公共方法具有全面的文档字符串
 
@@ -98,6 +99,8 @@ python minesweeper-game/windows/build.py
 ### 特定模式
 - **网格表示**：列表的列表 `[[0 for _ in range(size)] for _ in range(size)]`
 - **地雷数量随机化**：`mines=None` 时使用 `random.randint(3, 5)` 生成随机数量
+- **倒计时功能**：支持时间限制，超时判定为失败
+- **难度选择**：4 个难度级别（简单 15 分钟、困难 10 分钟、极限 5 分钟、自定义）
 - **首次点击保护**：确保首次点击和周围没有地雷
 - **递归展开**：自动展开空白单元格
 - **坐标验证**：访问前检查 `0 <= row < size`
