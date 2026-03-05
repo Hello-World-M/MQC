@@ -8,10 +8,10 @@
 
 使用提供的批处理文件快速启动游戏：
 
-1. 双击运行 `scripts/启动游戏.bat` 文件
+1. 双击运行 `scripts/start_game.bat` 文件
 2. 根据提示选择版本：
    - 选择1：彩色命令行版本
-   - 选择2：基础命令行版本  
+   - 选择2：基础命令行版本
    - 选择3：Web版本（浏览器）
    - 选择4：生成Windows可执行文件
 
@@ -19,7 +19,7 @@
 
 如果已生成exe文件，直接双击运行：
 ```
-dist/扫雷游戏.exe
+dist/minesweeper.exe
 ```
 
 ### 方法三：直接运行Python文件
@@ -66,7 +66,7 @@ dist/扫雷游戏.exe
 
 ### 自动构建
 
-1. 运行 `scripts/启动游戏.bat`
+1. 运行 `scripts/start_game.bat`
 2. 选择选项4："生成Windows可执行文件"
 3. 等待构建完成
 
@@ -79,7 +79,7 @@ dist/扫雷游戏.exe
    python scripts/build.py
    ```
 
-3. 构建完成后，可执行文件将位于 `dist/扫雷游戏.exe`
+3. 构建完成后，可执行文件将位于 `dist/minesweeper.exe`
 
 ### 构建要求
 
@@ -97,10 +97,10 @@ minesweeper-game/
 ├── web/                       # Web版本
 │   └── minesweeper_web.html   # 浏览器版本
 ├── scripts/                   # Windows脚本
-│   ├── 启动游戏.bat          # 一键启动脚本
+│   ├── start_game.bat         # 一键启动脚本
 │   └── build.py               # 构建脚本
 ├── dist/                      # 构建输出（生成后）
-│   └── 扫雷游戏.exe          # Windows可执行文件
+│   └── minesweeper.exe       # Windows可执行文件
 └── docs/                      # 文档
     └── windows-guide.md       # 本指南
 ```

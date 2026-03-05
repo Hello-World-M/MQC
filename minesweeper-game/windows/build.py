@@ -88,43 +88,46 @@ def create_windows_batch_file():
     """创建Windows批处理启动脚本"""
     batch_content = '''@echo off
 chcp 65001 >nul
-title 扫雷游戏
+title Minesweeper Game
 
 echo ================================
-echo          扫雷游戏
+echo       Minesweeper Game
 echo ================================
 echo.
 
 :: 检查Python是否安装
 python --version >nul 2>&1
 if errorlevel 1 (
-    echo 错误: 未检测到Python安装!
-    echo 请先安装Python 3.11或更高版本
-    echo 下载地址: https://www.python.org/downloads/
+    echo [Error] Python not detected!
+    echo.
+    echo Please install Python 3.11 or higher
+    echo Download: https://www.python.org/downloads/
+    echo.
+    echo Note: Check "Add Python to PATH" during installation
     pause
     exit /b 1
 )
 
 :: 检查Python版本是否符合要求
 for /f "tokens=2" %%i in ('python --version 2^>^&1') do set PYTHON_VERSION=%%i
-echo 检测到Python版本: %PYTHON_VERSION%
+echo [Info] Python version detected: %PYTHON_VERSION%
 
 :: 运行游戏
 echo.
-echo 正在启动游戏...
+echo [Info] Starting game...
 python minesweeper_color.py
 
 if errorlevel 1 (
     echo.
-    echo 游戏运行出错，请检查错误信息
+    echo [Error] Game execution failed, please check error messages
     pause
 )
 '''
-    
-    with open('扫雷游戏.bat', 'w', encoding='gbk') as f:
+
+    with open('start_game.bat', 'w', encoding='gbk') as f:
         f.write(batch_content)
-    
-    print("已创建扫雷游戏.bat启动脚本")
+
+    print("已创建 start_game.bat 启动脚本")
 
 def create_requirements_txt():
     """创建requirements.txt文件"""
@@ -213,10 +216,10 @@ def build_executable():
         # 使用--onefile参数生成单个exe文件
         # 使用--windowed参数隐藏控制台窗口（如需GUI版本）
         # 使用--icon参数添加图标（如果有图标文件）
-        cmd = [sys.executable, "-m", "PyInstaller", "--onefile", "--name", "扫雷游戏", "minesweeper_color.py"]
+        cmd = [sys.executable, "-m", "PyInstaller", "--onefile", "--name", "minesweeper", "minesweeper_color.py"]
         subprocess.check_call(cmd)
         print("可执行文件构建成功!")
-        print("可执行文件位置: dist/扫雷游戏.exe")
+        print("可执行文件位置: dist/minesweeper.exe")
         return True
     except subprocess.CalledProcessError as e:
         print(f"可执行文件构建失败: {e}")
@@ -248,7 +251,7 @@ def main():
     print("文件列表:")
     print("- minesweeper.py: 基础版本")
     print("- minesweeper_color.py: 彩色版本")
-    print("- 扫雷游戏.bat: Windows批处理启动脚本")
+    print("- start_game.bat: Windows批处理启动脚本")
     print("- README.md: 用户指南")
     print("- requirements.txt: 依赖项列表")
 
