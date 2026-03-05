@@ -18,9 +18,13 @@ python3 minesweeper-game/src/minesweeper_color.py
 
 ### 测试
 ```bash
-# 目前未实现自动化测试
-# pytest 被列为开发依赖项，但尚无测试文件
-# 需要手动测试：运行游戏并验证功能
+# 运行自动化测试（推荐）
+python3 test_minesweeper.py
+
+# 手动测试
+cd minesweeper-game/src
+python3 minesweeper.py
+python3 minesweeper_color.py
 ```
 
 ### 构建可执行文件（Windows）
