@@ -29,16 +29,18 @@ class GameStatus(Enum):
 class Minesweeper:
     """扫雷游戏主类"""
     
-    def __init__(self, size=5, mines=5):
+    def __init__(self, size=5, mines=None):
         """
         初始化游戏
-        
+
         Args:
             size: 游戏网格大小（默认5x5）
-            mines: 地雷数量（默认5个）
+            mines: 地雷数量（None 表示随机 3-5 个，否则使用指定数量）
         """
         self.size = size
-        self.mines = mines
+        # 如果未指定地雷数量，则在 3-5 之间随机
+        self.mines = mines if mines is not None else random.randint(3, 5)
+        self.show_mine_count = mines is not None  # 是否显示地雷数量
         self.grid = [[0 for _ in range(size)] for _ in range(size)]  # 0表示空地，-1表示地雷
         self.state = [[CellState.HIDDEN for _ in range(size)] for _ in range(size)]  # 单元格状态
         self.game_status = GameStatus.PLAYING
@@ -211,7 +213,11 @@ class Minesweeper:
         
         # 显示游戏状态
         print(f'\n游戏状态: {self.get_status_text()}')
-        print(f'剩余地雷: {self.get_remaining_mines()}')
+        # 如果是随机地雷模式，不显示具体数量
+        if self.show_mine_count:
+            print(f'剩余地雷: {self.get_remaining_mines()}')
+        else:
+            print('剩余地雷: ???')
     
     def get_status_text(self):
         """获取游戏状态文本"""
@@ -285,7 +291,8 @@ def parse_coordinates(input_str):
 
 def main():
     """游戏主循环"""
-    game = Minesweeper(size=5, mines=5)
+    # 不指定地雷数量，让游戏随机生成 3-5 个地雷
+    game = Minesweeper(size=5)
     
     print("欢迎来到 5x5 扫雷游戏!")
     print("输入坐标来揭开格子，格式: 行列 (例如: 12 表示第1行第2列)")

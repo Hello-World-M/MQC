@@ -97,6 +97,7 @@ python minesweeper-game/windows/build.py
 
 ### 特定模式
 - **网格表示**：列表的列表 `[[0 for _ in range(size)] for _ in range(size)]`
+- **地雷数量随机化**：`mines=None` 时使用 `random.randint(3, 5)` 生成随机数量
 - **首次点击保护**：确保首次点击和周围没有地雷
 - **递归展开**：自动展开空白单元格
 - **坐标验证**：访问前检查 `0 <= row < size`
