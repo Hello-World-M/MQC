@@ -172,6 +172,11 @@
             background: #ffebee;
             color: #c62828;
         }
+
+        .message-timeout {
+            background: #fff3e0;
+            color: #e65100;
+        }
         
         .instructions {
             margin-top: 20px;
@@ -255,11 +260,12 @@
         const GameStatus = {
             PLAYING: 0,
             WON: 1,
-            LOST: 2
+            LOST: 2,
+            TIMEOUT: 3
         };
 
         class Minesweeper {
-            constructor(size = 5, mines = 5) {
+            constructor(size = 5, mines = 5, timeLimit = null) {
                 this.size = size;
                 this.mines = mines;
                 this.grid = [];
@@ -269,6 +275,7 @@
                 this.firstMove = true;
                 this.startTime = null;
                 this.timerInterval = null;
+                this.timeLimit = timeLimit;  // 倒计时限制（秒），null 表示无限制
                 this.init();
             }
 
@@ -358,6 +365,14 @@
                     return true;
                 }
 
+                // 检查是否超时
+                if (this.check_timeout()) {
+                    this.gameStatus = GameStatus.TIMEOUT;
+                    this.stopTimer();
+                    this.reveal_all_mines();
+                    return true;
+                }
+
                 // 如果是空格，自动揭开周围的格子
                 if (this.grid[row][col] === 0) {
                     this.get_neighbors(row, col).forEach(([nr, nc]) => {
@@ -408,6 +423,38 @@
                 }
             }
 
+            get_remaining_time() {
+                /**
+                 * 获取剩余时间（秒）
+                 *
+                 * Returns:
+                 *     int: 剩余时间（秒），如果游戏未开始则返回 timeLimit
+                 */
+                if (this.startTime === null) {
+                    return this.timeLimit;
+                }
+                const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+                const remaining = this.timeLimit - elapsed;
+                return Math.max(0, remaining);
+            }
+
+            check_timeout() {
+                /**
+                 * 检查是否超时
+                 *
+                 * Returns:
+                 *     bool: 是否超时
+                 */
+                if (this.timeLimit === null) {
+                    return false;
+                }
+                if (this.startTime === null) {
+                    return false;
+                }
+                const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+                return elapsed >= this.timeLimit;
+            }
+
             get_remaining_mines() {
                 let flagged_count = 0;
                 for (let row = 0; row < this.size; row++) {
@@ -423,17 +470,48 @@
             get_status_text() {
                 if (this.gameStatus === GameStatus.PLAYING) return '点击格子开始游戏';
                 if (this.gameStatus === GameStatus.WON) return '恭喜你赢了！🎉';
+                if (this.gameStatus === GameStatus.TIMEOUT) return '时间到！⏰';
                 return '很遗憾，你踩到地雷了！💣';
             }
 
             startTimer() {
                 this.startTime = Date.now();
                 this.timerInterval = setInterval(() => {
-                    const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
-                    const minutes = Math.floor(elapsed / 60);
-                    const seconds = elapsed % 60;
-                    document.getElementById('timer').textContent = 
-                        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    const remaining = this.get_remaining_time();
+                    const timerEl = document.getElementById('timer');
+
+                    if (this.timeLimit !== null) {
+                        // 倒计时模式
+                        const minutes = Math.floor(remaining / 60);
+                        const seconds = remaining % 60;
+                        timerEl.textContent =
+                            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                        // 动态颜色
+                        if (remaining > 60) {
+                            timerEl.style.color = '#008000';  // 绿色
+                        } else if (remaining > 30) {
+                            timerEl.style.color = '#FFA500';  // 橙色
+                        } else {
+                            timerEl.style.color = '#FF0000';  // 红色
+                        }
+                    } else {
+                        // 向上计时模式
+                        const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+                        const minutes = Math.floor(elapsed / 60);
+                        const seconds = elapsed % 60;
+                        timerEl.textContent =
+                            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                        timerEl.style.color = '#333';
+                    }
+
+                    // 检查超时
+                    if (this.check_timeout() && this.gameStatus === GameStatus.PLAYING) {
+                        this.gameStatus = GameStatus.TIMEOUT;
+                        this.stopTimer();
+                        this.reveal_all_mines();
+                        this.updateDisplay();
+                    }
                 }, 1000);
             }
 
@@ -459,6 +537,8 @@
                     messageEl.classList.add('message-playing');
                 } else if (this.gameStatus === GameStatus.WON) {
                     messageEl.classList.add('message-won');
+                } else if (this.gameStatus === GameStatus.TIMEOUT) {
+                    messageEl.classList.add('message-timeout');
                 } else {
                     messageEl.classList.add('message-lost');
                 }
@@ -500,25 +580,82 @@
         // 游戏控制
         let game = new Minesweeper();
         let currentDifficulty = 0;
+        let currentMode = 'grid';  // 'grid' 或 'time'
 
         // 难度设置
-        const difficulties = [
-            { size: 5, mines: 5, name: '初级' },
-            { size: 8, mines: 10, name: '中级' },
-            { size: 10, mines: 15, name: '高级' }
-        ];
+        const difficulties = {
+            grid: [
+                { size: 5, mines: 5, name: '初级', timeLimit: null },
+                { size: 8, mines: 10, name: '中级', timeLimit: null },
+                { size: 10, mines: 15, name: '高级', timeLimit: null }
+            ],
+            time: [
+                { size: 5, mines: null, name: '简单', timeLimit: 15 * 60 },  // 15 分钟
+                { size: 5, mines: null, name: '困难', timeLimit: 10 * 60 },  // 10 分钟
+                { size: 5, mines: null, name: '极限', timeLimit: 5 * 60 },   // 5 分钟
+                { size: 5, mines: null, name: '自定义', timeLimit: null }   // 自定义时间
+            ]
+        };
 
         // 事件监听器
         document.getElementById('new-game-btn').addEventListener('click', () => {
-            game = new Minesweeper(difficulties[currentDifficulty].size, difficulties[currentDifficulty].mines);
+            const diff = difficulties[currentMode][currentDifficulty];
+            game = new Minesweeper(diff.size, diff.mines, diff.timeLimit);
         });
 
         document.getElementById('difficulty-btn').addEventListener('click', () => {
-            currentDifficulty = (currentDifficulty + 1) % difficulties.length;
-            const diff = difficulties[currentDifficulty];
-            game = new Minesweeper(diff.size, diff.mines);
-            document.getElementById('difficulty-btn').textContent = `当前难度: ${diff.name}`;
+            const modeDifficulties = difficulties[currentMode];
+            currentDifficulty = (currentDifficulty + 1) % modeDifficulties.length;
+            const diff = modeDifficulties[currentDifficulty];
+
+            // 自定义时间处理
+            let timeLimit = diff.timeLimit;
+            if (diff.timeLimit === null && currentMode === 'time' && diff.name === '自定义') {
+                const minutes = prompt('请输入倒计时时长（分钟）：', '5');
+                if (minutes !== null && !isNaN(minutes) && parseInt(minutes) > 0) {
+                    timeLimit = parseInt(minutes) * 60;
+                } else {
+                    // 如果输入无效，恢复默认
+                    currentDifficulty = 0;
+                    const newDiff = modeDifficulties[0];
+                    game = new Minesweeper(newDiff.size, newDiff.mines, newDiff.timeLimit);
+                    updateDifficultyButton();
+                    return;
+                }
+            }
+
+            game = new Minesweeper(diff.size, diff.mines, timeLimit);
+            updateDifficultyButton();
         });
+
+        // 模式切换
+        const modeToggleBtn = document.createElement('button');
+        modeToggleBtn.textContent = '切换模式';
+        modeToggleBtn.id = 'mode-toggle-btn';
+        modeToggleBtn.style.cssText = 'background: #FF9800;';
+        document.querySelector('.game-controls').appendChild(modeToggleBtn);
+
+        modeToggleBtn.addEventListener('click', () => {
+            currentMode = currentMode === 'grid' ? 'time' : 'grid';
+            currentDifficulty = 0;  // 切换模式时重置到第一个难度
+            const diff = difficulties[currentMode][currentDifficulty];
+            game = new Minesweeper(diff.size, diff.mines, diff.timeLimit);
+            updateDifficultyButton();
+        });
+
+        function updateDifficultyButton() {
+            const modeName = currentMode === 'grid' ? '网格' : '时间';
+            const diff = difficulties[currentMode][currentDifficulty];
+            document.getElementById('difficulty-btn').textContent = `${modeName} - ${diff.name}`;
+
+            // 更新模式按钮样式
+            const modeBtn = document.getElementById('mode-toggle-btn');
+            if (currentMode === 'time') {
+                modeBtn.style.background = '#FF9800';  // 橙色
+            } else {
+                modeBtn.style.background = '#2196F3';  // 蓝色
+            }
+        }
 
         // 棋盘点击事件
         document.getElementById('game-board').addEventListener('click', (e) => {
@@ -547,7 +684,7 @@
 
         // 初始化显示
         game.updateDisplay();
-        document.getElementById('difficulty-btn').textContent = `当前难度: ${difficulties[currentDifficulty].name}`;
+        updateDifficultyButton();
     </script>
 </body>
 </html>
