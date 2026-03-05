@@ -7,7 +7,7 @@
 
 ## [未发布]
 
-## [0.4.0] - 2026-03-05
+## [0.3.0] - 2026-03-05
 
 ### 新增
 
@@ -26,7 +26,7 @@
 
 #### 文档
 - 更新 README.md，添加 Web 版本特性说明
-- 更新版本管理指南，添加 v0.4.0 记录
+- 更新版本管理指南，添加完整记录
 - 创建 CHANGELOG.md
 
 ### 变更
@@ -60,20 +60,6 @@
 - ✅ Windows 版本：无需改动（启动脚本，自动继承 Python 功能）
 - ✅ Web 版本：已更新，功能完全同步
 
-## [0.3.0] - 2026-03-05
-
-### 新增
-- 添加倒计时挑战模式
-- 添加难度选择（简单 15 分钟、困难 10 分钟、极限 5 分钟、自定义）
-- 添加剩余时间显示（动态颜色：绿→黄→红）
-- 添加超时自动判定功能
-- 添加 TIMEOUT 游戏状态
-
-### 变更
-- 重构难度系统，使用 Difficulty 枚举
-- 更新游戏状态枚举，添加 TIMEOUT
-- 添加时间限制相关属性和方法
-
 ## [0.2.0] - 2026-03-05
 
 ### 新增
@@ -102,8 +88,7 @@
 - 命令行界面
 - 跨平台支持（Windows/Linux/macOS）
 
-[未发布]: https://github.com/Hello-World-M/MQC/compare/v0.4.0...HEAD
-[0.4.0]: https://github.com/Hello-World-M/MQC/compare/v0.3.0...v0.4.0
+[未发布]: https://github.com/Hello-World-M/MQC/compare/v0.3.0...HEAD
 [0.3.0]: https://github.com/Hello-World-M/MQC/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/Hello-World-M/MQC/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/Hello-World-M/MQC/compare/v0.1.0...v0.1.1
