@@ -24,18 +24,28 @@ class GameStatus(Enum):
     PLAYING = 0  # 游戏中
     WON = 1  # 胜利
     LOST = 2  # 失败
+    TIMEOUT = 3  # 超时
+
+
+class Difficulty(Enum):
+    """游戏难度枚举"""
+    EASY = 1  # 简单：15 分钟
+    HARD = 2  # 困难：10 分钟
+    EXTREME = 3  # 极限：5 分钟
+    CUSTOM = 4  # 自定义
 
 
 class Minesweeper:
     """扫雷游戏主类"""
     
-    def __init__(self, size=5, mines=None):
+    def __init__(self, size=5, mines=None, time_limit=None):
         """
         初始化游戏
 
         Args:
             size: 游戏网格大小（默认5x5）
             mines: 地雷数量（None 表示随机 3-5 个，否则使用指定数量）
+            time_limit: 时间限制（秒），None 表示无限制
         """
         self.size = size
         # 如果未指定地雷数量，则在 3-5 之间随机
@@ -46,6 +56,8 @@ class Minesweeper:
         self.game_status = GameStatus.PLAYING
         self.moves = 0  # 移动次数
         self.first_move = True  # 是否第一次移动
+        self.time_limit = time_limit  # 时间限制（秒）
+        self.start_time = None  # 游戏开始时间
         
     def is_valid_cell(self, row, col):
         """检查坐标是否有效"""
@@ -122,13 +134,18 @@ class Minesweeper:
         if self.grid[row][col] == -1:
             self.game_status = GameStatus.LOST
             return True
-        
+
+        # 检查是否超时
+        if self.check_timeout():
+            self.game_status = GameStatus.TIMEOUT
+            return True
+
         # 如果是空格（周围没有地雷），自动揭开周围的格子
         if self.grid[row][col] == 0:
             for nr, nc in self.get_neighbors(row, col):
                 if self.state[nr][nc] == CellState.HIDDEN:
                     self.reveal_cell(nr, nc)
-        
+
         # 检查是否获胜
         self.check_win()
         return True
@@ -218,6 +235,13 @@ class Minesweeper:
             print(f'剩余地雷: {self.get_remaining_mines()}')
         else:
             print('剩余地雷: ???')
+        # 显示剩余时间
+        if self.time_limit is not None and self.start_time is not None:
+            remaining_time = self.get_remaining_time()
+            if remaining_time > 0:
+                minutes = int(remaining_time // 60)
+                seconds = int(remaining_time % 60)
+                print(f'剩余时间: {minutes:02d}:{seconds:02d}')
     
     def get_status_text(self):
         """获取游戏状态文本"""
@@ -225,6 +249,8 @@ class Minesweeper:
             return '游戏中'
         elif self.game_status == GameStatus.WON:
             return '你赢了! 🎉'
+        elif self.game_status == GameStatus.TIMEOUT:
+            return '时间到! ⏰'
         else:
             return '你输了 💣'
     
@@ -232,6 +258,50 @@ class Minesweeper:
         """获取剩余地雷数"""
         flagged_count = sum(1 for row in self.state for cell in row if cell == CellState.FLAGGED)
         return self.mines - flagged_count
+
+    def get_remaining_time(self):
+        """
+        获取剩余时间（秒）
+
+        Returns:
+            int: 剩余时间（秒），如果游戏未开始则返回 time_limit
+        """
+        import time
+        if self.start_time is None:
+            return self.time_limit
+        elapsed = int(time.time() - self.start_time)
+        remaining = self.time_limit - elapsed
+        return max(0, remaining)
+
+    def start_timer(self):
+        """开始计时"""
+        import time
+        self.start_time = time.time()
+
+    def check_timeout(self):
+        """
+        检查是否超时
+
+        Returns:
+            bool: 是否超时
+        """
+        import time
+        if self.time_limit is None:
+            return False
+        if self.start_time is None:
+            return False
+        elapsed = time.time() - self.start_time
+        return elapsed >= self.time_limit
+
+    def check_win(self):
+        """检查游戏是否获胜"""
+        for row in range(self.size):
+            for col in range(self.size):
+                if self.grid[row][col] != -1 and self.state[row][col] != CellState.REVEALED:
+                    return  # 还有非地雷格子未揭开，游戏继续
+
+        # 所有非地雷格子都已揭开，游戏胜利
+        self.game_status = GameStatus.WON
     
     def reset(self):
         """重置游戏"""
@@ -240,6 +310,7 @@ class Minesweeper:
         self.game_status = GameStatus.PLAYING
         self.moves = 0
         self.first_move = True
+        self.start_time = None  # 重置开始时间
 
 
 def clear_screen():
@@ -289,11 +360,52 @@ def parse_coordinates(input_str):
         return None
 
 
+def select_difficulty():
+    """
+    选择游戏难度
+
+    Returns:
+        int: 时间限制（秒）
+    """
+    print("=" * 40)
+    print("选择游戏难度")
+    print("=" * 40)
+    print("1. 简单（15 分钟）")
+    print("2. 困难（10 分钟）")
+    print("3. 极限（5 分钟）")
+    print("4. 自定义")
+    print()
+
+    while True:
+        choice = input("请输入难度选择 (1-4): ").strip()
+
+        if choice == '1':
+            return 15 * 60  # 15 分钟
+        elif choice == '2':
+            return 10 * 60  # 10 分钟
+        elif choice == '3':
+            return 5 * 60  # 5 分钟
+        elif choice == '4':
+            while True:
+                minutes = input("请输入倒计时时长（分钟）: ").strip()
+                try:
+                    minutes = int(minutes)
+                    if minutes <= 0:
+                        print("时间必须大于 0！")
+                        continue
+                    return minutes * 60
+                except ValueError:
+                    print("请输入有效的数字！")
+        else:
+            print("无效选择，请输入 1-4！")
+
+
 def main():
     """游戏主循环"""
     # 不指定地雷数量，让游戏随机生成 3-5 个地雷
-    game = Minesweeper(size=5)
-    
+    time_limit = select_difficulty()
+    game = Minesweeper(size=5, time_limit=time_limit)
+
     print("欢迎来到 5x5 扫雷游戏!")
     print("输入坐标来揭开格子，格式: 行列 (例如: 12 表示第1行第2列)")
     print("输入 f + 坐标来标记地雷，格式: f 行列 (例如: f12)")
@@ -303,24 +415,33 @@ def main():
     while True:
         clear_screen()
         game.display()
-        
+
         if game.game_status != GameStatus.PLAYING:
             game.display(show_mines=True)
-            
+
             if game.game_status == GameStatus.WON:
                 print(f"恭喜! 你用 {game.moves} 步完成了游戏!")
+            elif game.game_status == GameStatus.TIMEOUT:
+                print("很遗憾，时间到了！游戏失败。")
             else:
                 print("很遗憾，你踩到地雷了!")
-            
-            choice = get_input("\n输入 r 重新开始，输入 q 退出: ").lower()
+
+            choice = get_input("\n输入 r 重新开始，输入 d 更改难度，输入 q 退出: ").lower()
             if choice == 'r':
                 game.reset()
+                continue
+            elif choice == 'd':
+                game.__init__(size=5, time_limit=select_difficulty())
                 continue
             elif choice == 'q':
                 print("再见!")
                 break
             else:
                 continue
+
+        # 首次操作时开始计时
+        if game.start_time is None:
+            game.start_timer()
         
         # 获取用户输入
         user_input = get_input("\n请输入坐标 (例如: 12) 或标记 (例如: f12): ").lower()
