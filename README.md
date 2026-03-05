@@ -18,7 +18,7 @@ python3 minesweeper_color.py
 # 查看文档
 cat CONTRIBUTING.md    # 贡献指南
 cat AGENTS.md        # 代码规范
-cat VERSION_MANAGEMENT.md  # 版本管理
+cat VERSION_MANAGEMENT.md # 版本管理
 ```
 
 ## 📦 主要项目
@@ -29,14 +29,14 @@ cat VERSION_MANAGEMENT.md  # 版本管理
 **特性**:
 - 5x5 网格，地雷数量随机（3-5 个）
 - 彩色命令行界面
-- 第一次点击保护
-- 自动展开空白区域
-- 支持地雷标记
-- **倒计时挑战**：3 个难度级别（简单 15 分钟、困难 10 分钟、极限 5 分钟、自定义）
-- 实时显示剩余时间（动态颜色）
-- 超时自动判定为失败
-
-**详细文档**: 查看 [minesweeper-game/README.md](minesweeper-game/README.md)
+    - 第一次点击保护
+    - 自动展开空白区域
+    - 支持地雷标记
+    - **倒计时挑战**：3 个难度级别，时间限制增加紧张感
+    - 实时显示剩余时间（动态颜色）
+    - 超时自动判定为失败
+    - 重新开始功能
+    - 跨平台兼容
 
 ## 🤝 贡献
 
