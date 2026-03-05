@@ -370,16 +370,6 @@ class Minesweeper:
         elapsed = time.time() - self.start_time
         return elapsed >= self.time_limit
 
-    def check_win(self):
-        """检查游戏是否获胜"""
-        for row in range(self.size):
-            for col in range(self.size):
-                if self.grid[row][col] != -1 and self.state[row][col] != CellState.REVEALED:
-                    return  # 还有非地雷格子未揭开，游戏继续
-
-        # 所有非地雷格子都已揭开，游戏胜利
-        self.game_status = GameStatus.WON
-    
     def reset(self):
         """重置游戏"""
         self.grid = [[0 for _ in range(self.size)] for _ in range(self.size)]

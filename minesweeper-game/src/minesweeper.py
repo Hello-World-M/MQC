@@ -153,37 +153,27 @@ class Minesweeper:
     def toggle_flag(self, row, col):
         """
         切换标记状态
-        
+
         Args:
             row: 行坐标
             col: 列坐标
-        
+
         Returns:
             bool: 是否成功切换
         """
         if not self.is_valid_cell(row, col):
             return False
-        
+
         if self.state[row][col] == CellState.REVEALED:
             return False
-        
+
         if self.state[row][col] == CellState.HIDDEN:
             self.state[row][col] = CellState.FLAGGED
         else:  # CellState.FLAGGED
             self.state[row][col] = CellState.HIDDEN
-        
+
         self.check_win()
         return True
-    
-    def check_win(self):
-        """检查游戏是否获胜"""
-        for row in range(self.size):
-            for col in range(self.size):
-                if self.grid[row][col] != -1 and self.state[row][col] != CellState.REVEALED:
-                    return  # 还有非地雷格子未揭开，游戏继续
-        
-        # 所有非地雷格子都已揭开，游戏胜利
-        self.game_status = GameStatus.WON
     
     def get_cell_display(self, row, col):
         """
