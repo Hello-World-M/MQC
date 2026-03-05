@@ -134,6 +134,9 @@ dmypy.json
 ehthumbs.db
 Thumbs.db
 
+# AI Agent
+.sisyphus/
+
 # Project specific
 dist/
 dist/*.exe
