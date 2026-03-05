@@ -146,7 +146,7 @@ def create_readme():
 
 ## 功能特点
 
-- 5x5游戏网格，包含5个地雷
+- 5x5游戏网格，地雷数量随机（3-5个）
 - 彩色界面，数字用不同颜色标识
 - 第一次点击保护（确保首次点击及周围没有地雷）
 - 自动展开空白区域
@@ -249,11 +249,11 @@ def main():
     print()
     print("Windows移植准备完成!")
     print("文件列表:")
-    print("- minesweeper.py: 基础版本")
-    print("- minesweeper_color.py: 彩色版本")
-    print("- start_game.bat: Windows批处理启动脚本")
-    print("- README.md: 用户指南")
-    print("- requirements.txt: 依赖项列表")
+    print("- src/minesweeper.py: 基础版本")
+    print("- src/minesweeper_color.py: 彩色版本")
+    print("- windows/start_game.bat: Windows批处理启动脚本")
+    print("- windows/README.md: 用户指南")
+    print("- windows/requirements.txt: 依赖项列表")
 
 if __name__ == "__main__":
     main()

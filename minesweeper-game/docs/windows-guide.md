@@ -8,12 +8,12 @@
 
 使用提供的批处理文件快速启动游戏：
 
-1. 双击运行 `scripts/start_game.bat` 文件
+1. 双击运行 `windows/start_game.bat` 文件
 2. 根据提示选择版本：
-   - 选择1：彩色命令行版本
-   - 选择2：基础命令行版本
-   - 选择3：Web版本（浏览器）
-   - 选择4：生成Windows可执行文件
+    - 选择1：彩色命令行版本
+    - 选择2：基础命令行版本
+    - 选择3：Web版本（浏览器）
+    - 选择4：生成Windows可执行文件
 
 ### 方法二：使用可执行文件
 
@@ -66,7 +66,7 @@ dist/minesweeper.exe
 
 ### 自动构建
 
-1. 运行 `scripts/start_game.bat`
+1. 运行 `windows/start_game.bat`
 2. 选择选项4："生成Windows可执行文件"
 3. 等待构建完成
 
@@ -75,9 +75,9 @@ dist/minesweeper.exe
 1. 打开命令提示符或PowerShell
 2. 运行构建脚本：
 
-   ```cmd
-   python scripts/build.py
-   ```
+    ```cmd
+    python windows/build.py
+    ```
 
 3. 构建完成后，可执行文件将位于 `dist/minesweeper.exe`
 
@@ -96,9 +96,11 @@ minesweeper-game/
 │   └── minesweeper_color.py   # 彩色版本
 ├── web/                       # Web版本
 │   └── minesweeper_web.html   # 浏览器版本
-├── scripts/                   # Windows脚本
+├── windows/                   # Windows脚本
 │   ├── start_game.bat         # 一键启动脚本
-│   └── build.py               # 构建脚本
+│   ├── build.py               # 构建脚本
+│   ├── README.md             # Windows用户指南
+│   └── requirements.txt      # 依赖项列表
 ├── dist/                      # 构建输出（生成后）
 │   └── minesweeper.exe       # Windows可执行文件
 └── docs/                      # 文档
