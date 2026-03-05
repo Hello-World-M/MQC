@@ -32,6 +32,9 @@ cat VERSION_MANAGEMENT.md  # 版本管理
 - 第一次点击保护
 - 自动展开空白区域
 - 支持地雷标记
+- **倒计时挑战**：3 个难度级别（简单 15 分钟、困难 10 分钟、极限 5 分钟、自定义）
+- 实时显示剩余时间（动态颜色）
+- 超时自动判定为失败
 
 **详细文档**: 查看 [minesweeper-game/README.md](minesweeper-game/README.md)
 
